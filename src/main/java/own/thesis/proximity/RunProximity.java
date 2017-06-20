@@ -69,7 +69,7 @@ public class RunProximity {
 		System.out.println("	--input-w2v-model [FILENAME] : path to word2vec model");
 
 	}
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException {
 		if (args.length == 0 || args[0].equals("--help") ) {
 			System.out.print("Usage: " ); usage();
 		}
@@ -147,7 +147,6 @@ public class RunProximity {
 					logger.info("PATH_DOCUMENT_TOPICS_DISTRIBUTION: "+PATH_DOCUMENT_TOPICS_DISTRIBUTION);
 					logger.info("PATH_TERMES_TOPICS_DISTRIBUTION: "+PATH_TERMES_TOPICS_DISTRIBUTION);
 					logger.info("K: "+ K );
-
 					break;
 				}
 				else {
@@ -192,7 +191,8 @@ public class RunProximity {
 						}
 						else {
 							// estimate proximity GENERAL with ALL TERMS
-							logger.info("Estimate Model All topics and All terms");
+							logger.info("Estimate Model ALL_TOPICS and ALL_TERMS");
+							init_LDA_MATRIX_PROXIMITY();
 						}
 					}
 					else {
@@ -210,9 +210,13 @@ public class RunProximity {
 								logger.info("TOP_K_TERMS_TOPICS: "+TOP_K_TERMS_TOPICS);
 								break;
 							}
+							else {
+								// estimate proximity GENERAL with TOP_TERMS
+								logger.info("Estimate Model ALL_TOPICS and TOP_TERMS");
+								init_LDA_MATRIX_PROXIMITY();
+							}
 						}
 					}
-
 				}
 				else {
 					if(MATRIX_MODEL.equals("TOP_TOPICS")){
@@ -228,6 +232,11 @@ public class RunProximity {
 								logger.info("MATRIX_CONFIG: "+MATRIX_CONFIG);
 								logger.info("MATRIX_MODEL: "+MATRIX_MODEL);
 								break;
+							}
+							else {
+								// estimate proximity SELECTED Model with ALL_TERMS
+								logger.info("Estimate Model TOP_TOPICS and ALL_TERMS");
+								init_LDA_MATRIX_PROXIMITY();
 							}
 						}
 						else {
@@ -246,25 +255,14 @@ public class RunProximity {
 									logger.info("TOP_K_DOC_TOPIC: "+TOP_K_DOC_TOPIC);
 									break;
 								}
+								else {
+									// estimate proximity SELECTED Model with TOP_TERMES
+									logger.info("Estimate Model TOP_TOPICS and TOP_TERMS");
+									init_LDA_MATRIX_PROXIMITY();
+								}
 							}
 						}
 					}
-				}
-				if(PATH_FILE_SAVE_MODELS.isEmpty() || PATH_TAGS_MODELS.isEmpty() || PATH_TERMES_TOPICS_DISTRIBUTION.isEmpty()  || PATH_DOCUMENT_TOPICS_DISTRIBUTION.isEmpty()
-						|| (K == 0) || TOP_K_DOC_TOPIC == 0){
-					logger.info("Missing Value: ");
-					logger.info("PATH_FILE_SAVE_MODELS: "+ PATH_FILE_SAVE_MODELS);
-					logger.info("PATH_TAGS_MODELS: "+ PATH_TAGS_MODELS);
-					logger.info("PATH_DOCUMENT_TOPICS_DISTRIBUTION: "+PATH_DOCUMENT_TOPICS_DISTRIBUTION);
-					logger.info("PATH_TERMES_TOPICS_DISTRIBUTION: "+PATH_TERMES_TOPICS_DISTRIBUTION);
-					logger.info("K: "+ K );
-					logger.info("MATRIX_CONFIG: "+MATRIX_CONFIG);
-					logger.info("MATRIX_MODEL: "+MATRIX_MODEL);
-					logger.info("TOP_K_DOC_TOPIC: "+TOP_K_DOC_TOPIC);
-					break;
-				}
-				else {
-					// estimate proximity based on Classical LDA
 				}
 				break;
 			}
@@ -276,41 +274,28 @@ public class RunProximity {
 
 	}
 
-	public static void LDA_MATRIX_PROXIMITY() throws FileNotFoundException{
+	public static void init_LDA_MATRIX_PROXIMITY() throws FileNotFoundException{
 		InitProximity init = new InitProximity(PATH_TAGS_TOPICS_DISTRIBUTION, PATH_TAGS_MODELS, PATH_DOCUMENTS_MODELS, PATH_DOCUMENT_TOPICS_DISTRIBUTION, PATH_TERMES_TOPICS_DISTRIBUTION);
 		DOCUMENTS_MODELS = init.loadDocumentModels();
 		DOCUMENTS_TAGS = init.loadTagsModels();
 		DOCUMENTS_TOPICS_DISRIBUTIONS = init.loadDocumentsTopicsDistributions();
 		TAGS_TOPICS_DISRIBUTIONS = init.loadTagsTopicsDistributions();
-		TOPICS_TERMS_DISRIBUTIONS = init.loadTopicsTermsDistributions();
-		
-		// for all documents 
-		for (Entry<String,HashMap<String, Double>> entry : DOCUMENTS_TAGS.entrySet()) {
-			String docID = entry.getKey();
-			HashMap<String, Double> Document_Tag_Model = entry.getValue();
-			HashMap<String, Double> Document_Model = DOCUMENTS_MODELS.get(docID);
-			HashMap<Integer, Double> Document_Topic_Distribution = DOCUMENTS_TOPICS_DISRIBUTIONS.get(docID);
-			HashMap<Integer, Double> Tag_Topic_Distribution = TAGS_TOPICS_DISRIBUTIONS.get(docID);
-
-			LDA_Matrix_Estimation lda_matrix = new LDA_Matrix_Estimation(Document_Tag_Model, TOPICS_TERMS_DISRIBUTIONS, Document_Model, Document_Topic_Distribution, Tag_Topic_Distribution);
-			if()
-			lda_matrix.estimationGeneral(config);
-		}
+		TOPICS_TERMS_DISRIBUTIONS = init.loadTopicsTermsDistributions();	
 	}
 
-	public static void LDA_PROXIMITY() throws FileNotFoundException{
+	public static void init_LDA_PROXIMITY() throws FileNotFoundException{
 		InitProximity init = new InitProximity(PATH_TAGS_MODELS,PATH_DOCUMENT_TOPICS_DISTRIBUTION, PATH_TERMES_TOPICS_DISTRIBUTION);
 		init.loadTagsModels();
 		init.loadDocumentsTopicsDistributions();
 		init.loadTopicsTermsDistributions();		
 	}
 
-	public static void LM_PROXIMITY() throws FileNotFoundException{
+	public static void init_LM_PROXIMITY() throws FileNotFoundException{
 		InitProximity init = new InitProximity(PATH_TAGS_MODELS, PATH_DOCUMENTS_MODELS);
 		init.loadDocumentModels();
 		init.loadTagsModels();
 	}
-	public static void TM_PROXIMITY() throws IOException{
+	public static void init_TM_PROXIMITY() throws IOException{
 		InitProximity init = new InitProximity(WORD2VEC_MODEL_PATH, PATH_TAGS_MODELS, PATH_DOCUMENTS_MODELS);
 		init.loadDocumentModels();
 		init.loadTagsModels();

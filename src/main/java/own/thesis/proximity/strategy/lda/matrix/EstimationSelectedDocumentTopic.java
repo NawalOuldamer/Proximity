@@ -18,6 +18,12 @@ public class EstimationSelectedDocumentTopic {
 	private HashMap<Integer, HashMap<String, Double>> Terms_Topics_Distributions = new HashMap<>();
 	private Set<Integer> Top_Topics = new HashSet<>(); 
 
+	
+	private HashMap<String, Double> Proximity_Document_Prior = new HashMap<>();
+	private HashMap<String, Double> Proximity_Tag_Prior = new HashMap<>();
+	private HashMap<String, Double> Proximity_Prior = new HashMap<>();
+	private HashMap<String, Double> Proximity = new HashMap<>();
+
 	public EstimationSelectedDocumentTopic(Set<Integer> Top_Topics, HashMap<String, Double> Document_Tag_Model,HashMap<String, Double> Document_Model,HashMap<Integer, HashMap<String, Double>> Terms_Topics_Distributions){
 		this.Document_Model = Document_Model;
 		this.Document_Tag_Model = Document_Tag_Model;
@@ -31,7 +37,6 @@ public class EstimationSelectedDocumentTopic {
 	 * @param Document_Topic_Distribution
 	 */
 	public void estimateDocumentTopicPrior(	HashMap<Integer,Double> Document_Topic_Distribution){
-		HashMap<String, Double> Proximity_Document_Prior = new HashMap<>();
 		for (Entry<String, Double> entry : this.Document_Tag_Model.entrySet()) {
 			String tag = entry.getKey();
 			Double tag_pr = entry.getValue();
@@ -53,7 +58,6 @@ public class EstimationSelectedDocumentTopic {
 
 
 	public void estimateTagTopicPrior(HashMap<Integer,Double> Tag_Topic_Distribution){
-		HashMap<String, Double> Proximity_Tag_Prior = new HashMap<>();
 		for (Entry<String, Double> entry : this.Document_Tag_Model.entrySet()) {
 			String tag = entry.getKey();
 			Double tag_pr = entry.getValue();
@@ -74,7 +78,6 @@ public class EstimationSelectedDocumentTopic {
 
 
 	public void estimatePrior(HashMap<Integer,Double> Document_Topic_Distribution,HashMap<Integer,Double> Tag_Topic_Distribution ){
-		HashMap<String, Double> Proximity_Prior = new HashMap<>();
 		for (Entry<String, Double> entry : this.Document_Tag_Model.entrySet()) {
 			String tag = entry.getKey();
 			Double tag_pr = entry.getValue();
@@ -94,7 +97,6 @@ public class EstimationSelectedDocumentTopic {
 	}
 
 	public void estimateNonPrior(){
-		HashMap<String, Double> Proximity = new HashMap<>();
 		for (Entry<String, Double> entry : this.Document_Tag_Model.entrySet()) {
 			String tag = entry.getKey();
 			Double tag_pr = entry.getValue();
@@ -111,6 +113,23 @@ public class EstimationSelectedDocumentTopic {
 			}
 			Proximity.put(tag, tag_weight);		
 		}
+	}
+
+
+	public HashMap<String, Double> getProximity_Document_Prior() {
+		return Proximity_Document_Prior;
+	}
+
+	public HashMap<String, Double> getProximity_Tag_Prior() {
+		return Proximity_Tag_Prior;
+	}
+
+	public HashMap<String, Double> getProximity_Prior() {
+		return Proximity_Prior;
+	}
+
+	public HashMap<String, Double> getProximity() {
+		return Proximity;
 	}
 
 }

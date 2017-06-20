@@ -15,6 +15,15 @@ public class LDA_Matrix_Estimation {
 	private HashMap<Integer, Double> Document_Topic_Distribution = new HashMap<>(); // LDA Document Topic Distribution
 	private HashMap<Integer, Double> Tag_Topic_Distribution = new HashMap<>(); // LDA Tag Topic Distribution
 
+	
+	
+	
+	private HashMap<String, Double> Proximity_Document_Prior = new HashMap<>();
+	private HashMap<String, Double> Proximity_Tag_Prior = new HashMap<>();
+	private HashMap<String, Double> Proximity_Prior = new HashMap<>();
+	private HashMap<String, Double> Proximity = new HashMap<>();
+
+	
 	public LDA_Matrix_Estimation(HashMap<String, Double> Document_Tag_Model,HashMap<Integer, HashMap<String, Double>> TOPICS_TERMS_DISRIBUTIONS ,HashMap<String, Double> Document_Model,
 			HashMap<Integer, Double> Document_Topic_Distribution, HashMap<Integer, Double> Tag_Topic_Distribution){
 		this.Document_Model = Document_Model;
@@ -38,9 +47,9 @@ public class LDA_Matrix_Estimation {
 	 * All topics are used
 	 * @param config
 	 */
-	public void estimationGeneral(String config){
-		switch (config) {
-		case "Top_K_Topic_Terms":{
+	public void estimationGeneral(String MATRIX_CONFIG){
+		switch (MATRIX_CONFIG) {
+		case "TOP_TERMS":{
 			// remove tags does not appears in topic vocabulary
 			HashMap<String, Double> new_document_tag_model = new HashMap<>();
 			new_document_tag_model =  getMapTopKTopicTerms();
@@ -49,15 +58,25 @@ public class LDA_Matrix_Estimation {
 			estimation_general.estimateTagTopicPrior(Tag_Topic_Distribution);
 			estimation_general.estimatePrior(Document_Topic_Distribution, Tag_Topic_Distribution);
 			estimation_general.estimateNonPrior();
+			
+			this.Proximity_Document_Prior = estimation_general.getProximity_Document_Prior();
+			this.Proximity_Tag_Prior = estimation_general.getProximity_Tag_Prior();
+			this.Proximity_Prior = estimation_general.getProximity();
+			this.Proximity = estimation_general.getProximity();
 			break;			
 		}
 
-		case "All_Topic_Terms":{
+		case "ALL_TERMES":{
 			EstimationGeneralDocumentTopic estimation_general = new EstimationGeneralDocumentTopic(Document_Tag_Model, Document_Model, TOPICS_TERMS_DISRIBUTIONS);
 			estimation_general.estimateDocumentTopicPrior(Document_Topic_Distribution);
 			estimation_general.estimateTagTopicPrior(Tag_Topic_Distribution);
 			estimation_general.estimatePrior(Document_Topic_Distribution, Tag_Topic_Distribution);
 			estimation_general.estimateNonPrior();
+			
+			this.Proximity_Document_Prior = estimation_general.getProximity_Document_Prior();
+			this.Proximity_Tag_Prior = estimation_general.getProximity_Tag_Prior();
+			this.Proximity_Prior = estimation_general.getProximity();
+			this.Proximity = estimation_general.getProximity();
 			break;			
 		}
 
@@ -71,9 +90,9 @@ public class LDA_Matrix_Estimation {
 	 * Only topk k document topic are used
 	 * @param config
 	 */
-	public void estimationSelected(String config){
-		switch (config) {
-		case "Top_K_Topic_Terms":{
+	public void estimationSelected(String MATRIX_CONFIG){
+		switch (MATRIX_CONFIG) {
+		case "TOP_TERMS":{
 			// remove tags does not appears in topic vocabulary
 			HashMap<String, Double> new_document_tag_model = new HashMap<>();
 			new_document_tag_model =  getMapTopKTopicTerms();
@@ -84,10 +103,15 @@ public class LDA_Matrix_Estimation {
 			estimation_selected.estimateTagTopicPrior(Tag_Topic_Distribution);
 			estimation_selected.estimatePrior(Document_Topic_Distribution, Tag_Topic_Distribution);
 			estimation_selected.estimateNonPrior();
+			
+			this.Proximity_Document_Prior = estimation_selected.getProximity_Document_Prior();
+			this.Proximity_Tag_Prior = estimation_selected.getProximity_Tag_Prior();
+			this.Proximity_Prior = estimation_selected.getProximity();
+			this.Proximity = estimation_selected.getProximity();
 			break;			
 		}
 
-		case "All_Topic_Terms":{
+		case "ALL_TERMES":{
 			Set<Integer> Top_Topics = new HashSet<>();
 			Top_Topics = getTopKTopicDocument();
 			EstimationSelectedDocumentTopic estimation_selected = new EstimationSelectedDocumentTopic(Top_Topics, Document_Tag_Model, Document_Model, TOPICS_TERMS_DISRIBUTIONS);
@@ -95,6 +119,11 @@ public class LDA_Matrix_Estimation {
 			estimation_selected.estimateTagTopicPrior(Tag_Topic_Distribution);
 			estimation_selected.estimatePrior(Document_Topic_Distribution, Tag_Topic_Distribution);
 			estimation_selected.estimateNonPrior();
+			
+			this.Proximity_Document_Prior = estimation_selected.getProximity_Document_Prior();
+			this.Proximity_Tag_Prior = estimation_selected.getProximity_Tag_Prior();
+			this.Proximity_Prior = estimation_selected.getProximity();
+			this.Proximity = estimation_selected.getProximity();
 			break;			
 		}
 
@@ -102,6 +131,23 @@ public class LDA_Matrix_Estimation {
 			break;
 		}
 
+	}
+	
+
+	public HashMap<String, Double> getProximity_Document_Prior() {
+		return Proximity_Document_Prior;
+	}
+
+	public HashMap<String, Double> getProximity_Tag_Prior() {
+		return Proximity_Tag_Prior;
+	}
+
+	public HashMap<String, Double> getProximity_Prior() {
+		return Proximity_Prior;
+	}
+
+	public HashMap<String, Double> getProximity() {
+		return Proximity;
 	}
 
 	/**
