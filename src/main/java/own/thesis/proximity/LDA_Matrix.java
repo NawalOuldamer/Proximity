@@ -119,10 +119,7 @@ public class LDA_Matrix {
 
 		default:
 			break;
-		}
-		
-		
-		
+		}		
 	}
 
 	public void saveProxomity_Models(List<Map.Entry<String, Double>> Model, String docID) throws IOException{
